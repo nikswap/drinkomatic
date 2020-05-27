@@ -642,18 +642,35 @@ TRANSFER_LIST = {
 		end,
 	},
 }
+
 LAST_YEAR = {
-	local r = assert(db:fetchone(
-		'select sum(amount*count) from full_log where dt<("'..math.floor(os.date("%Y")-1)..'-12-31 23:59:59") and dt > ("'..math.floor(os.date("%Y")-1)..'-01-01 00:00:00")'))
-	print(" Last year:     %16.2f DKK", r[1])
-	return 'MAIN'
+	keyboard = {
+		[''] = function()
+			print " Aborted."
+			return 'MAIN'
+		end,
+		function() --default
+			local r = assert(db:fetchone(
+				'select sum(amount*count) from full_log where dt<("'..math.floor(os.date("%Y")-1)..'-12-31 23:59:59") and dt > ("'..math.floor(os.date("%Y")-1)..'-01-01 00:00:00")'))
+			print(" Last year:     %16.2f DKK", r[1])
+			return 'MAIN'
+		end,
+	},
 }
 
 CURRENT_YEAR = {
-	local r = assert(db:fetchone(
-		'select sum(amount*count) from full_log where dt>("'..math.floor(os.date("%Y")-1)..'-12-31 23:59:59")'))
-	print(" Current year:     %16.2f DKK", r[1])
-	return 'MAIN'
+	keyboard = {
+		[''] = function()
+			print " Aborted."
+			return 'MAIN'
+		end,
+		function() --default
+			local r = assert(db:fetchone(
+				'select sum(amount*count) from full_log where dt>("'..math.floor(os.date("%Y")-1)..'-12-31 23:59:59")'))
+				print(" Current year:     %16.2f DKK", r[1])
+			return 'MAIN'
+		end,
+	},
 }
 
 TRANSFER_AMOUNT = {
