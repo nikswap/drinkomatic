@@ -53,6 +53,8 @@ local function main_menu()
 	print "  2  | Update or create new product."
 	print " /<p>| Check price for the product <p>."
 	print "  .  | Print this menu."
+	print "  3  | Show account numbers for last year"
+	print "  4  | Show account numbers for current year"
 	print "-------------------------------------------"
 
 	local r = assert(db:fetchone(
@@ -151,6 +153,12 @@ MAIN = {
 		['2'] = function()
 			print(" Scan barcode (or /<barcode>, or press enter to abort):")
 			return 'PROD_CODE'
+		end,
+		['3'] = function()
+			return 'LAST_YEAR'
+		end,
+		['4'] = function()
+			return 'CURRENT_YEAR'
 		end,
 		['.'] = function()
 			main_menu()
@@ -633,6 +641,19 @@ TRANSFER_LIST = {
 			return 'TRANSFER_AMOUNT', id, n
 		end,
 	},
+}
+LAST_YEAR = {
+	local r = assert(db:fetchone(
+		'select sum(amount*count) from full_log where dt<("'..math.floor(os.date("%Y")-1)..'-12-31 23:59:59") and dt > ("'..math.floor(os.date("%Y")-1)..'-01-01 00:00:00")'))
+	print(" Last year:     %16.2f DKK", r[1])
+	return 'MAIN'
+}
+
+CURRENT_YEAR = {
+	local r = assert(db:fetchone(
+		'select sum(amount*count) from full_log where dt>("'..math.floor(os.date("%Y")-1)..'-12-31 23:59:59")'))
+	print(" Current year:     %16.2f DKK", r[1])
+	return 'MAIN'
 }
 
 TRANSFER_AMOUNT = {
